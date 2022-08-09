@@ -10,7 +10,7 @@ const handler = async (
   res: NextApiResponse<ResponseType>
 ) => {
   const { phone, email } = req.body.data;
-  const user = phone ? { phone: Number(phone) } : email ? { email } : null;
+  const user = phone ? { phone: phone } : email ? { email } : null;
   if (!user) return res.status(400).json({ ok: false });
   const payload = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -39,7 +39,7 @@ const handler = async (
   //     to: process.env.MY_PHONE ?? "", //원래 phone이 들어가야함
   //     body: `로그인 토큰은 ${payload}입니다`,
   //   });
-    
+
   // }
 
   return res.json({
@@ -47,4 +47,8 @@ const handler = async (
   });
 };
 
-export default withHandler("POST", handler);
+export default withHandler({
+  method: "POST",
+  handler,
+  isPrivate:false
+});
