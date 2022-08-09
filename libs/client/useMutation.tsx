@@ -1,16 +1,16 @@
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 
-interface UseMutationState {
+interface UseMutationState<T> {
   loading: boolean;
-  data?: object;
+  data?: T;
   error?: object;
 }
 
-type UseMutationResult = [(data: any) => void, UseMutationState];
+type UseMutationResult<T> = [(data: any) => void, UseMutationState<T>];
 
-const useMutation = (url: string): UseMutationResult => {
-  const [state, setState] = useState<UseMutationState>({
+function useMutation<T>(url: string): UseMutationResult<T> {
+  const [state, setState] = useState<UseMutationState<T>>({
     loading: false,
     data: undefined,
     error: undefined,
@@ -18,28 +18,29 @@ const useMutation = (url: string): UseMutationResult => {
 
   const mutation = async (data: any) => {
     try {
-      setState({
-        ...state,
+      setState((prev) => ({
+        ...prev,
         loading: true,
-      });
+      }));
       const result = await axios.post(url, {
         data,
       });
-      setState({
-        ...state,
+
+      setState((prev) => ({
+        ...prev,
         data: result.data,
-      });
+      }));
     } catch (_e) {
       const e = _e as AxiosError;
-      setState({
-        ...state,
+      setState((prev) => ({
+        ...prev,
         error: e,
-      });
+      }));
     } finally {
-      setState({
-        ...state,
+      setState((prev) => ({
+        ...prev,
         loading: false,
-      });
+      }));
     }
   };
   return [
@@ -50,6 +51,6 @@ const useMutation = (url: string): UseMutationResult => {
       error: state.error,
     },
   ];
-};
+}
 
 export default useMutation;
