@@ -5,8 +5,10 @@ export interface ResponseType {
   [key: string]: any;
 }
 
+type method = "POST" | "GET" | "DELETE";
+
 interface ConfigType {
-  method: "POST" | "GET" | "DELETE";
+  methods: method[];
   handler: (
     req: NextApiRequest,
     res: NextApiResponse<ResponseType>
@@ -15,11 +17,12 @@ interface ConfigType {
 }
 
 export const withHandler =
-  ({ method, isPrivate = true, handler }: ConfigType) =>
+  ({ methods, isPrivate = true, handler }: ConfigType) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method !== method) {
+    if (req.method && !methods.includes(req.method as method)) {
       res.status(405).end();
     }
+
     if (isPrivate && !req.session.user) {
       return res.json({ ok: false, error: "로그인해주세요" });
     }

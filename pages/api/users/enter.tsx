@@ -1,5 +1,5 @@
 import twilio from "twilio";
-import { client } from "@libs/client/client";
+import client from "@libs/client/client";
 import { ResponseType, withHandler } from "@libs/server/withHandler";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -48,7 +48,7 @@ const handler = async (
 };
 
 export default withHandler({
-  method: "POST",
+  methods: ["POST"],
   handler,
-  isPrivate:false
+  isPrivate: false,
 });

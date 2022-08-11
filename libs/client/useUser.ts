@@ -2,20 +2,11 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-
-interface IProfile {
-  id: number;
-  phone: string;
-  email: string | null;
-  name: "Anonymous";
-  avatar: string | null;
-  createAt: string;
-  updatedAt: string;
-}
+import { User } from "@prisma/client";
 
 interface ISuccessGetProfileData {
   ok: true;
-  profile: IProfile;
+  profile: User;
 }
 
 interface IFailGetProfileData {
