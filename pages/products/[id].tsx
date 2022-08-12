@@ -3,14 +3,17 @@ import type { NextPage } from "next";
 import Button from "@components/button";
 import Layout from "@components/layout";
 import { useRouter } from "next/router";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { Product, User } from "@prisma/client";
 import Link from "next/link";
+import useMutation from "@libs/client/useMutation";
+import { cls } from "@libs/client/utils";
 
 interface IGetProductDetail {
   ok: true;
   product: IProduct;
   relatedProducts: Product[];
+  isLiked: boolean;
 }
 
 interface IProduct extends Product {
@@ -19,11 +22,18 @@ interface IProduct extends Product {
 
 const productDetail: NextPage = () => {
   const router = useRouter();
-
-  const { data } = useSWR<IGetProductDetail>(
+  const { mutate } = useSWRConfig();
+  const { data, mutate: boundMutate } = useSWR<IGetProductDetail>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
-  console.log("data", data);
+
+  const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
+  const onFavClick = () => {
+    if (!data) return;
+    boundMutate((prev) => prev && { ...prev, isLiked: !prev.isLiked }, false);
+    // mutate("/api/users/me", { ok: false }, false);
+    toggleFav({});
+  };
   return (
     <Layout canGoBack>
       <div className="px-4  py-4">
@@ -52,11 +62,19 @@ const productDetail: NextPage = () => {
             <p className=" my-6 text-gray-700">{data?.product.description}</p>
             <div className="flex items-center justify-between space-x-2">
               <Button large text="Talk to seller" />
-              <button className="p-3 rounded-md flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-500">
+              <button
+                onClick={onFavClick}
+                className={cls(
+                  "p-3 rounded-md flex items-center justify-center ",
+                  data?.isLiked
+                    ? "text-red-400 hover:text-red-500"
+                    : "text-gray-400 hover:text-gray-500 "
+                )}
+              >
                 <svg
                   className="h-6 w-6 "
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
+                  fill={data?.isLiked ? "red" : "none"}
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   aria-hidden="true"

@@ -8,7 +8,13 @@ import { Product } from "@prisma/client";
 
 interface IGetProducts {
   ok:true,
-  products:Product[]
+  products:IProduct[]
+}
+
+interface IProduct extends Product{
+  _count:{
+    Fav:number
+  }
 }
 
 const Home: NextPage = () => {
@@ -18,14 +24,14 @@ const Home: NextPage = () => {
   return (
     <Layout title="홈" hasTabBar>
       <div className="flex flex-col space-y-5 divide-y">
-        {data?.products.map((product) => (
+        {data?.products?.map((product) => (
           <Item
             id={product.id}
             key={product.id}
             title={product.name}
             price={product.price}
             comments={1}
-            hearts={1}
+            hearts={product._count.Fav}
           />
         ))}
         <FloatingButton href="/products/upload">

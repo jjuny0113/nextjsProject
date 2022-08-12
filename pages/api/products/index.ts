@@ -22,7 +22,15 @@ async function getData(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) {
-  const products = await client.product.findMany({});
+  const products = await client.product.findMany({
+    include: {
+      _count: {
+        select: {
+          Fav: true,
+        },
+      },
+    },
+  });
   console.log("products", products);
   res.json({
     ok: true,

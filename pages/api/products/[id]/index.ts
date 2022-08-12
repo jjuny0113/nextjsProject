@@ -22,7 +22,7 @@ const handler = async (
       contains: word,
     },
   }));
-  console.log(terms);
+
   const relatedProducts = await client?.product.findMany({
     where: {
       OR: terms,
@@ -33,11 +33,24 @@ const handler = async (
       },
     },
   });
-  
+
+  const isLiked = Boolean(
+    await client?.fav.findFirst({
+      where: {
+        productId: Number(req.query.id),
+        userId: req.session.user?.id,
+      },
+      select: {
+        id: true,
+      },
+    })
+  );
+console.log('isLiked',isLiked)
   res.json({
     ok: true,
     product,
-    relatedProducts
+    isLiked,
+    relatedProducts,
   });
 };
 
