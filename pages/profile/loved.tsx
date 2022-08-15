@@ -1,19 +1,22 @@
 import type { NextPage } from "next";
 import Item from "@components/item";
 import Layout from "@components/layout";
+import useSWR from "swr";
+import { IGetLovedData } from "./types";
 
 const Loved: NextPage = () => {
+  const { data } = useSWR<IGetLovedData>(`/api/users/me/favs`);
+  
   return (
     <Layout title="관심목록" canGoBack>
       <div className="flex flex-col space-y-5 pb-10  divide-y">
-        {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
+        {data?.favs.map((v, i) => (
           <Item
-            key={i}
-            id={i}
-            title="iPhone 14"
-            price={99}
-            comments={1}
-            hearts={1}
+            key={v.id}
+            id={v.product.id}
+            title={v.product.name}
+            price={v.product.price}
+            hearts={v.product._count.Fav}
           />
         ))}
       </div>

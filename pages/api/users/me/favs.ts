@@ -1,4 +1,4 @@
-import  client  from "@libs/client/client";
+import client from "@libs/client/client";
 import { withIronSessionApiRoute } from "iron-session/next";
 import { ResponseType, withHandler } from "@libs/server/withHandler";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -8,13 +8,29 @@ const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) => {
-  const profile = await client.user.findUnique({
-    where: { id: req.session.user?.id },
+  const {
+    session: { user },
+  } = req;
+  const favs = await client.fav.findMany({
+    where: {
+      userId: user?.id,
+    },
+    include: {
+      product: {
+        include: {
+          _count: {
+            select: {
+              Fav: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   res.json({
     ok: true,
-    profile,
+    favs,
   });
 };
 
