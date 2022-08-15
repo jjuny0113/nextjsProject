@@ -7,20 +7,20 @@ import useSWR from "swr";
 import { Product } from "@prisma/client";
 
 interface IGetProducts {
-  ok:true,
-  products:IProduct[]
+  ok: true;
+  products: IProduct[];
 }
 
-interface IProduct extends Product{
-  _count:{
-    Fav:number
-  }
+interface IProduct extends Product {
+  _count: {
+    Fav: number;
+  };
 }
 
 const Home: NextPage = () => {
   const { user, isLoading } = useUser();
   const { data } = useSWR<IGetProducts>("/api/products");
-  console.log('data',data)
+  console.log("data", data);
   return (
     <Layout title="홈" hasTabBar>
       <div className="flex flex-col space-y-5 divide-y">
@@ -30,7 +30,6 @@ const Home: NextPage = () => {
             key={product.id}
             title={product.name}
             price={product.price}
-            comments={1}
             hearts={product._count.Fav}
           />
         ))}

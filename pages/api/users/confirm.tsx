@@ -27,7 +27,7 @@ const handler = async (
   if (!foundToken) {
     return res.status(404).end();
   }
-  console.log("foundToken", foundToken);
+  
   req.session.user = {
     id: foundToken?.userId,
   };
