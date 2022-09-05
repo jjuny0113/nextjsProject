@@ -27,7 +27,7 @@ const handler = async (
       },
     },
   });
-
+console.log('sales')
   res.json({
     ok: true,
     sales,
